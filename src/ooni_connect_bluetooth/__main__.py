@@ -30,6 +30,20 @@ def main():
         pass
 
 @cli.command()
+@click.option("--host", default="0.0.0.0", help="Host to bind the server to")
+@click.option("--port", default=8000, help="Port to bind the server to")
+async def webserver(host: str, port: int):
+    """Start the web server for monitoring the thermometer"""
+    import uvicorn
+    from .webserver import app
+    
+    click.echo(f"Starting webserver on http://{host}:{port}")
+    config = uvicorn.Config(app, host=host, port=port, log_level="info")
+    server = uvicorn.Server(config)
+    await server.serve()
+
+
+@cli.command()
 async def scan():
     click.echo("Scanning for devices")
 
@@ -78,7 +92,7 @@ async def connect(ctx: click.Context, address: str, code: str):
         try:
             packet_data = NotifyCharacteristic.decode(data)
             packet = PacketNotify.decode(packet_data)
-            click.echo(f"Notify: {packet}")
+            click.echo(f"battery={packet.battery}, ambient_a={packet.ambient_a}, ambient_b={packet.ambient_b}, probe_p1={packet.probe_p1}, probe_p2={packet.probe_p2}")
         except DecodeError as exc:
             click.echo(f"Failed to decode: {data.hex()} with error {exc}")
 
