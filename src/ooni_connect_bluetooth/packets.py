@@ -91,7 +91,7 @@ class PacketNotify(Packet):
         probe_p1_connected = (flag & 0x04) >> 2  # Probe P1 flag
         probe_p2_connected = (flag & 0x08) >> 3  # Probe P2 flag
         eco_mode = (flag & 0x80) >> 7  # Eco mode flag
-        temperature_unit = (flag & 0x01) & (flag & 0x02)  # Temperature unit
+        temperature_unit = (flag & 0x01) >> 0  # Temperature unit
 
         return cls(
             battery=battery,
